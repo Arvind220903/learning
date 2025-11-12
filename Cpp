@@ -1,0 +1,107 @@
+#include <iostream>
+#include <cstring>
+#include <cstdlib>
+using namespace std;
+
+int main() {
+    const char code[9][4][10] = {
+        {"PRG1", "START", "", ""},
+        {"", "USING", "*", "15"},
+        {"", "L", "1", "FOUR"},
+        {"", "A", "1", "FIVE"},
+        {"", "ST", "1", "TEMP"},
+        {"FOUR", "DC", "5", ""},
+        {"FIVE", "DC", "3", ""},
+        {"TEMP", "DS", "1", ""},
+        {"", "END", "", ""}
+    };
+
+    char avail[15] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
+    int i, j, k;
+    int lc[9] = {0,0,0,0,0,0,0,0,0};
+    int loc = 0;
+
+    cout << "------------------------------------------------------------\n";
+    cout << "LABEL\t\tOPCODE\t\tOPERAND1\tOPERAND2\n";
+    cout << "------------------------------------------------------------\n";
+
+    for (i = 0; i < 9; i++) {
+        for (j = 0; j < 4; j++) {
+            cout << code[i][j] << "\t\t";
+        }
+        cout << endl;
+    }
+
+    cout << "------------------------------------------------------------\n";
+    cout << "\nVALUES FOR LC:\n";
+    cout << "------------------------------------------------------------\n";
+
+    for (i = 0; i < 9; i++) {
+        if (strcmp(code[i][1], "START") == 0) {
+            loc = 0;
+            lc[i] = loc;
+        }
+        else if (strcmp(code[i][1], "USING") == 0) {
+            lc[i] = loc;
+        }
+        else if (strcmp(code[i][1], "L") == 0 || strcmp(code[i][1], "A") == 0 || strcmp(code[i][1], "ST") == 0) {
+            loc = loc + 4;
+            lc[i] = loc;
+        }
+        else if (strcmp(code[i][1], "DC") == 0) {
+            loc = loc + 4;
+            lc[i] = loc;
+        }
+        else if (strcmp(code[i][1], "DS") == 0) {
+            int size = atoi(code[i][2]);
+            loc = loc + (4 * size);
+            lc[i] = loc;
+        }
+        else if (strcmp(code[i][1], "END") == 0) {
+            lc[i] = loc;
+        }
+    }
+
+    for (i = 0; i < 9; i++) {
+        cout << "LC[" << i << "] = " << lc[i] << endl;
+    }
+
+    cout << "------------------------------------------------------------\n";
+    cout << "SYMBOL TABLE:\n";
+    cout << "------------------------------------------------------------\n";
+    cout << "LABEL\t\tADDRESS\n";
+    cout << "------------------------------------------------------------\n";
+
+    for (i = 0; i < 9; i++) {
+        if (strcmp(code[i][0], "") != 0) {
+            cout << code[i][0] << "\t\t" << lc[i] << endl;
+        }
+    }
+
+    cout << "------------------------------------------------------------\n";
+    cout << "BASE TABLE:\n";
+    cout << "REG NO\tAVAILABILITY\tCONTENTS\n";
+    cout << "------------------------------------------------------------\n";
+
+    for (i = 0; i < 4; i++) {
+        cout << "R" << i + 1 << "\t\t" << avail[i] << "\t\t" << lc[i] << endl;
+    }
+
+    cout << "------------------------------------------------------------\n";
+    cout << "PASS II TABLE (Machine Code Representation):\n";
+    cout << "------------------------------------------------------------\n";
+
+    for (i = 0; i < 9; i++) {
+        cout << "(" << lc[i] << ")\t";
+        for (j = 0; j < 4; j++) {
+            cout << code[i][j] << "\t";
+        }
+        cout << endl;
+    }
+
+    cout << "------------------------------------------------------------\n";
+    cout << "PASS I and PASS II EXECUTION COMPLETE\n";
+    cout << "------------------------------------------------------------\n";
+
+    return 0;
+}
